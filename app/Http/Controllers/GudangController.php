@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreGudangRequest;
 use App\Models\Gudang;
 use App\Http\Resources\GudangResource;
 use Illuminate\Http\Request;
@@ -15,7 +17,8 @@ class GudangController extends Controller
     {
         try {
             $queryData = Gudang::all();
-            $formattedDatas = new GudangResource($queryData);
+            // $formattedDatas = new GudangResource($queryData);
+            $formattedDatas = GudangResource::collection($queryData);
             return response()->json([
                 "message" => "success",
                 "data" => $formattedDatas
@@ -28,20 +31,21 @@ class GudangController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        try {
-            $requestData = $request->all();
-            $gudang = Gudang::create($requestData);
-    
-            return response()->json([
-                "message" => "Gudang created successfully",
-                "data" => new GudangResource($gudang),
-            ], 201);
-        } catch (Exception $e) {
-            return response()->json($e->getMessage(), 400);
-        }
+    public function store(StoreGudangRequest $request)
+{
+    $validatedRequest = $request->validated();
+    try {
+        $queryData = Gudang::create($validatedRequest);
+        $formattedDatas = new GudangResource($queryData);
+        return response()->json([
+            "message" => "success",
+            "data" => $formattedDatas
+        ], 200);
+    } catch (Exception $e) {
+        return response()->json($e->getMessage(), 400);
     }
+}
+
 
     /**
      * Display the specified resource.
@@ -65,13 +69,15 @@ class GudangController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $validatedRequest = $request->validated();
         try {
-            $gudang = Gudang::findOrFail($id);
-            $gudang->update($request->all());
-    
+            $queryData = Gudang::findOrFail($id);
+            $queryData->update($validatedRequest);
+            $queryData->save();
+            $formattedDatas = new GudangResource($queryData);
             return response()->json([
-                "message" => "Gudang updated successfully",
-                "data" => new GudangResource($gudang),
+                "message" => "success",
+                "data" => $formattedDatas
             ], 200);
         } catch (Exception $e) {
             return response()->json($e->getMessage(), 400);
@@ -84,11 +90,12 @@ class GudangController extends Controller
     public function destroy(string $id)
     {
         try {
-            $gudang = Gudang::findOrFail($id);
-            $gudang->delete();
-    
+            $queryData = Gudang::findOrFail($id);
+            $queryData->delete();
+            $formattedDatas = new GudangResource($queryData);
             return response()->json([
-                "message" => "Gudang deleted successfully",
+                "message" => "success",
+                "data" => $formattedDatas
             ], 200);
         } catch (Exception $e) {
             return response()->json($e->getMessage(), 400);
