@@ -33,18 +33,23 @@ class GudangController extends Controller
      */
     public function store(StoreGudangRequest $request)
 {
-    $validatedRequest = $request->validated();
     try {
-        $queryData = Gudang::create($validatedRequest);
-        $formattedDatas = new GudangResource($queryData);
+        $validatedRequest = $request->validated();
+        $queryData = Gudang::create([
+            'product' => $validatedRequest['product'],
+            'jumlah' => $validatedRequest['jumlah'],
+            // add other fields as needed
+        ]);
+        $formattedData = new GudangResource($queryData);
         return response()->json([
             "message" => "success",
-            "data" => $formattedDatas
+            "data" => $formattedData
         ], 200);
     } catch (Exception $e) {
         return response()->json($e->getMessage(), 400);
     }
 }
+
 
 
     /**
