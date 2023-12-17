@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreGudangRequest;
+use App\Http\Requests\UpdateGudangRequest;
 use App\Models\Gudang;
 use App\Http\Resources\GudangResource;
 use Illuminate\Http\Request;
@@ -72,7 +73,7 @@ class GudangController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update( UpdateGudangRequest $request, string $id)
     {
         $validatedRequest = $request->validated();
         try {
